@@ -33,22 +33,22 @@
         {
             "type": "path",
             "url": "packages/drutogoti",
-            "options": { "symlink": true }
+            "options": { "symlink": false }
         },
         {
             "type": "path",
             "url": "packages/laravel-admin-panel",
-            "options": { "symlink": true }
+            "options": { "symlink": false }
         },
         {
             "type": "path",
             "url": "packages/laravel-attendance-hub",
-            "options": { "symlink": true }
+            "options": { "symlink": false }
         },
         {
             "type": "path",
             "url": "packages/laravel-ai-catalog",
-            "options": { "symlink": true }
+            "options": { "symlink": false }
         }
     ],
     "require": {
