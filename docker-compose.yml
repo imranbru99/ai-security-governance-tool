@@ -1,0 +1,70 @@
+services:
+  app:
+    build: .
+    container_name: aegisgov-app
+    ports:
+      - "8080:8000"
+    environment:
+      APP_NAME: "AI Security & Governance Tool"
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8080
+      APP_KEY: base64:QUlTZWN1cml0eUdvdmVybmFuY2VUb29sS2V5MTIzNDU=
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ai_security_gov
+      DB_USERNAME: aisec
+      DB_PASSWORD: secret
+      SESSION_DRIVER: database
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+      DEMO_USER_EMAIL: demo@ai-security-gov.test
+      DEMO_USER_PASSWORD: password
+      AISG_HOURLY_RATE: 85
+      AISG_MONTHLY_COST: 2400
+      MODULE_POLICIES: "true"
+      MODULE_POLICY_ENFORCEMENT: "true"
+      MODULE_ACCESS_REVIEWS: "true"
+      MODULE_RISK_SCORING: "true"
+      MODULE_AUDIT_LOGS: "true"
+      MODULE_POSTURE: "true"
+      MODULE_AI_INVENTORY: "true"
+      MODULE_AI_ASSIST: "true"
+      MODULE_PDF_PACKS: "true"
+      MODULE_CATALOG_SCRAPE: "false"
+      MODULE_ATTENDANCE_BRIDGE: "false"
+      MODULE_SPEED_OPTIMIZER: "true"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: >
+      sh -c "composer install --no-interaction --no-scripts &&
+             php artisan package:discover --ansi || true &&
+             php artisan key:generate --force &&
+             php artisan migrate --force &&
+             php artisan db:seed --force &&
+             php artisan serve --host=0.0.0.0 --port=8000"
+
+  mysql:
+    image: mysql:8.4
+    container_name: aegisgov-mysql
+    environment:
+      MYSQL_DATABASE: ai_security_gov
+      MYSQL_USER: aisec
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: rootsecret
+    ports:
+      - "3309:3306"
+    volumes:
+      - ai_security_gov_mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-prootsecret"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  ai_security_gov_mysql:
